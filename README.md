@@ -5,9 +5,9 @@ role based access system using express, typeorm , and aws rds for the gsg expres
 
 - clone the repo
 - run npm i
-- choose how to set up your db :
-       - use aws rds and set up a config file with the host , password , and username
-       - use another db option such as dbeaver with xamp and configure the username and password
+- choose how to set up your db :   
+         - use aws rds and set up a config file with the host , password , and username   
+         - use another db option such as dbeaver with xamp and configure the username and password
 
 ## This is a role based access system with the following details  🕴️🔐 :
 
