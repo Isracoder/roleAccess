@@ -4,6 +4,12 @@ import { User } from "./db/entities/User.js";
 import { Profile } from "./db/entities/Profile.js";
 import { Permission } from "./db/entities/Permission.js";
 import { Role } from "./db/entities/Role.js";
+// import { create } from "domain";
+import { createUser, login } from "./controllers/user.js";
+
+import dotenv from "dotenv";
+import { authenticate } from "./middlewares/auth/authenticate.js";
+dotenv.config();
 
 // import { User } from "./db/entities/User.js";
 var app = express();
@@ -11,36 +17,52 @@ var app = express();
 const PORT = 5000;
 
 app.use(express.json());
+app.use("/", authenticate);
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  console.log("in post methodj");
+  login(email, password)
+    .then((data) => {
+      console.log("hi ho here's the data");
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log("error bad request");
+      res.status(401).send(err);
+    });
+});
 
 app.post("/user", async (req, res) => {
-  try {
-    const user = new User();
-    const profile = new Profile();
-    user.userName = req.body.userName;
-    profile.firstName = req.body.firstName;
-    profile.lastName = req.body.lastName;
-    profile.dateOfBirth = req.body.dateOfBirth;
-    user.password = req.body.password;
-    user.email = req.body.email;
-    // await profile.save();
-    user.profile = profile;
-    // await user.save();
-    db.dataSource
-      .transaction(async (transactionManager) => {
-        await transactionManager.save(profile);
-        await transactionManager.save(user);
-      })
-      .then(() => {
-        // res.send()
-        res.send("User created and Profile created");
-      })
-      .catch((e) => {
-        res.status(500).send(`Something went wrong ${e}`);
-      });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Something went wrong with creating a new user");
-  }
+  const user = {
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
+  };
+  const profile = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    dateOfBirth: req.body.dateOfBirth,
+  };
+  // await profile.save();
+  createUser(
+    user.username,
+    user.password,
+    user.email,
+    profile.firstName,
+    profile.lastName,
+    profile.dateOfBirth
+  )
+    .then(() => {
+      res.status(201).send("user and profile created successfully");
+    })
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(500)
+        .send("something went wrong when trying to create user and profile");
+    });
 });
 
 app.post("/permission", async (req, res) => {
@@ -115,13 +137,13 @@ app.post("/role", async (req, res) => {
 app.get("/role/:id", async (req, res) => {
   try {
     const id = Number(req.params.id);
-    if (id) {
-      const role = await Role.findOneBy({ id });
+    const role = await Role.findOneBy({ id });
+    if (role) {
       console.log("sent");
       console.log(id);
       res.send(role);
     } else {
-      res.send("That id wasn't found");
+      res.send("There was no role found with that Id");
     }
   } catch (e) {
     console.log(e);

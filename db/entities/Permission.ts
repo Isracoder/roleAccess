@@ -20,6 +20,7 @@ export class Permission extends BaseEntity {
     type: "enum",
     enum: ["create_post", "edit_user", "delete_comment"],
     default: "create_post",
+    unique: true,
   })
   name: "create_post" | "edit_user" | "delete_comment";
 

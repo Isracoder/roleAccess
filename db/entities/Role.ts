@@ -21,6 +21,7 @@ export class Role extends BaseEntity {
     type: "enum",
     enum: ["admin", "user", "editor"],
     default: "user",
+    unique: true,
   })
   name: "user" | "admin" | "editor";
 
