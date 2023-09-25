@@ -18,11 +18,11 @@ export class Permission extends BaseEntity {
 
   @Column({
     type: "enum",
-    enum: ["create_post", "edit_user", "delete_comment"],
+    enum: ["create_post", "edit_user", "delete_comment", "newPermission"],
     default: "create_post",
     unique: true,
   })
-  name: "create_post" | "edit_user" | "delete_comment";
+  name: "create_post" | "edit_user" | "delete_comment" | "newPermission";
 
   @ManyToMany(() => Role, { cascade: true })
   roles: Role[];

@@ -1,6 +1,8 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../../db/entities/User.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const authenticate = async (
   req: express.Request,
@@ -8,9 +10,12 @@ const authenticate = async (
   next: express.NextFunction
 ) => {
   const token = req.headers["authorization"] || "";
+  // console.log(req.headers);
+  // console.log(`token ${token}`);
   let tokenIsValid;
   try {
     tokenIsValid = jwt.verify(token, process.env.SECRET_KEY || "");
+    console.log(`token ${tokenIsValid}`);
   } catch (error) {}
 
   if (tokenIsValid) {
@@ -24,3 +29,5 @@ const authenticate = async (
 };
 
 export { authenticate };
+
+// for authentication to work first login to user , then take what is returned upon login (the jwt token) and add it to headers under authorization

@@ -1,6 +1,5 @@
 import {
   BaseEntity,
-  BeforeInsert,
   Column,
   Entity,
   PrimaryGeneratedColumn,
@@ -19,6 +18,7 @@ export class Profile extends BaseEntity {
     length: 50,
   })
   firstName: string;
+
   @Column({
     nullable: false,
     length: 50,

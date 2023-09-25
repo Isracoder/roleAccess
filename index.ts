@@ -8,8 +8,8 @@ import { Role } from "./db/entities/Role.js";
 import { createUser, login } from "./controllers/user.js";
 
 import dotenv from "dotenv";
-import { authenticate } from "./middlewares/auth/authenticate.js";
 dotenv.config();
+import { authenticate } from "./middlewares/auth/authenticate.js";
 
 // import { User } from "./db/entities/User.js";
 var app = express();
@@ -17,12 +17,13 @@ var app = express();
 const PORT = 5000;
 
 app.use(express.json());
-app.use("/", authenticate);
+// app.use("/", authenticate);
 
-app.post("/login", (req, res) => {
+// homework 3 jwt + authentication
+app.get("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log("in post methodj");
+  // console.log("in post methodj");
   login(email, password)
     .then((data) => {
       console.log("hi ho here's the data");
@@ -34,6 +35,11 @@ app.post("/login", (req, res) => {
     });
 });
 
+app.get("/secure", authenticate, (req, res, next) => {
+  res.send("super secure route");
+});
+
+// homework 2 rbac
 app.post("/user", async (req, res) => {
   const user = {
     username: req.body.username,
@@ -155,6 +161,7 @@ app.put("/assignRole/:Userid", async (req, res) => {
   try {
     console.log("hi");
     const roleName = req.body.roleName;
+    if (!roleName) throw "error";
     console.log(roleName);
     const role = await Role.findOneBy({ name: roleName });
     // const role = true;
@@ -176,7 +183,7 @@ app.put("/assignRole/:Userid", async (req, res) => {
     }
   } catch (e) {
     console.log(e);
-    res.send(`error ${e}`);
+    res.send(`Something went wrong when trying to assign a role to a user`);
   }
 });
 
@@ -190,6 +197,7 @@ app.get("/user/:id", async (req, res) => {
   }
 });
 
+// basic endpoints
 app.get("/", (req, res) => {
   res.send("Server UP!");
 });
