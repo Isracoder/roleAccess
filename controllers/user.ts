@@ -78,10 +78,7 @@ const createUser = async (
   }
 };
 
-const addRoleToUser = async (
-  roleName: "user" | "admin" | "editor",
-  id: string | number
-) => {
+const addRoleToUser = async (roleName: Role["name"], id: string | number) => {
   try {
     console.log("hi");
 
@@ -97,11 +94,12 @@ const addRoleToUser = async (
         user.roles = [...user.roles, role];
         await user.save();
         console.log("user Updated");
-        return user;
+        return Promise.resolve(user);
       } catch (error) {
         console.log(error);
         throw "something went wrong";
       }
+      // return "everything okay" ;
     } else {
       // console.log(error);
       console.log("not able to find role and user");

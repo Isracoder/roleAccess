@@ -5,7 +5,7 @@ import { Profile } from "./db/entities/Profile.js";
 import { Permission } from "./db/entities/Permission.js";
 import { Role } from "./db/entities/Role.js";
 // import { create } from "domain";
-import { createUser, login } from "./controllers/user.js";
+import { addRoleToUser, createUser, login } from "./controllers/user.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -158,33 +158,18 @@ app.get("/role/:id", async (req, res) => {
 });
 
 app.put("/assignRole/:Userid", async (req, res) => {
-  try {
-    console.log("hi");
-    const roleName = req.body.roleName;
-    if (!roleName) throw "error";
-    console.log(roleName);
-    const role = await Role.findOneBy({ name: roleName });
-    // const role = true;
-    console.log("ho");
-    const id = Number(req.params.Userid);
-    const user = await User.findOneBy({ id: id });
-    if (role && user) {
-      // res.send("user found and role found");
-      try {
-        user.roles = [...user.roles, role];
-        await user.save();
-        res.send("user Updated");
-      } catch (error) {
-        res.send("Error assigning role to user");
-        console.log(error);
-      }
-    } else {
-      res.status(404).send("user or role not found!");
-    }
-  } catch (e) {
-    console.log(e);
-    res.send(`Something went wrong when trying to assign a role to a user`);
-  }
+  console.log("hi in assign role");
+  const roleName = req.body.roleName;
+  if (!roleName || !req.params.Userid)
+    res.send("error no rolename or userId was provided");
+  addRoleToUser(roleName, req.params.Userid)
+    .then(() => {
+      res.status(200).send("role assigned successfully");
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send(err);
+    });
 });
 
 app.get("/user/:id", async (req, res) => {
